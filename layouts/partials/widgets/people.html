@@ -38,7 +38,16 @@
   {{ end }}
   <div class="col-12 col-sm-auto people-person">
     {{ $src := "" }}
-    {{ if site.Params.avatar.gravatar }}
+    {{ if .Params.ohdsi_forums_username }}
+      {{ $ohdsiForumData := getJSON "https://forums.ohdsi.org/u/" .Params.ohdsi_forums_username ".json" }}
+      {{ with $ohdsiForumData.users }}
+        {{ range first 1 . }}
+          {{ $src = .avatar_template }}
+          {{ $src = replace $src "{size}" 270}}
+          {{ $src = printf "https://forums.ohdsi.org%s" ($src)}}
+        {{ end }}
+      {{ end }}
+    {{ else if site.Params.avatar.gravatar }}
       {{ $src = printf "https://s.gravatar.com/avatar/%s?s=150" (md5 .Params.email) }}
     {{ else if $avatar }}
       {{ $avatar_image := $avatar.Fill "270x270 Center" }}
@@ -51,7 +60,14 @@
 
     <div class="portrait-title">
       <h2>{{with $link}}<a href="{{.}}">{{end}}{{ .Params.name }}{{if $link}}</a>{{end}}</h2>
-      {{ with .Params.role }}<h3>{{ . | markdownify | emojify }}</h3>{{ end }}
+      {{ range .Params.organizations }}
+        {{ with .role }}<h3>{{ . | markdownify | emojify }}</h3>{{ end }}
+
+        {{ with .url }}<a href="{{ . }}" target="_blank" rel="noopener">{{ end }}
+          <span>{{ .name }}</span>
+          {{ if .url }}</a>{{ end }}
+
+          {{ end }}
       {{ if $show_social }}{{ partial "social_links" . }}{{ end }}
       {{ if and $show_interests .Params.interests }}<p class="people-interests">{{ delimit .Params.interests ", " | markdownify | emojify }}</p>{{ end }}
     </div>
