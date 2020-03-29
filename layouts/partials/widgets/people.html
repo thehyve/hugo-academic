@@ -28,21 +28,17 @@
     <h2 class="mb-4">{{ . | markdownify }}</h2>
   </div>
   {{end}}
-  {{ range $query }}
-  {{warnf "title %s" .}}
 
+  {{ range $query }}
   {{ $avatar := (.Resources.ByType "image").GetMatch "*avatar*" }}
   {{/* Get link to user's profile page. */}}
   {{ $link := "" }}
   {{ with site.GetPage (printf "/authors/%s" (path.Base (path.Split .Path).Dir)) }}
     {{ $link = .RelPermalink }}
   {{ end }}
-  {{ if not $link}}
-  {{warnf "link: %s" (printf "/authors/%s" (path.Base (path.Split .Path).Dir))}}
-{{end}}
   <div class="col-12 col-sm-auto people-person">
       {{with $link}}<a href="{{.}}">{{end}}
-      {{ partial "avatar" (dict "person" .Params)}}
+      {{ partial "avatar" (dict "person" .Params "avatar" $avatar)}}
       {{if $link}}</a>{{end}}
 
     <div class="portrait-title">

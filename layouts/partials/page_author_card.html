@@ -9,10 +9,9 @@
   {{ if and (eq $site_type "Person") (eq .Params.superuser true) }}
     {{ $profile_url = site.BaseURL }}
   {{ end }}
-
+  {{ $avatar := (.Resources.ByType "image").GetMatch "*avatar*" }}
   <div class="media author-card content-widget-hr">
-    {{ partial "avatar" (dict "person" .Params "class" "mr-3") }}
-
+    {{ partial "avatar" (dict "person" .Params "class" "mr-3" "avatar" $avatar) }}
     <div class="media-body">
       <h5 class="card-title"><a href="{{$profile_url}}">{{.Params.name}}</a></h5>
       {{ with .Params.role }}<h6 class="card-subtitle">{{. | markdownify | emojify}}</h6>{{end}}
